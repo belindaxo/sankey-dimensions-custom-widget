@@ -24,6 +24,8 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
             this.shadowRoot.innerHTML = `
                 <div id="container"></div>    
             `;
+
+            this._lastSentCategories = [];
         }
 
         /**
@@ -124,15 +126,27 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
             const scaleFormat = (value) => scaleValue(value, this.scaleFormat, this.decimalPlaces);
             const subtitleText = updateSubtitle(this.chartSubtitle, this.scaleFormat);
 
+            const validCategoryNames = nodes.map(n => n.name) || [];
+            if (JSON.stringify(this._lastSentCategories) !== JSON.stringify(validCategoryNames)) {
+                this._lastSentCategories = validCategoryNames;
+                this.dispatchEvent(new CustomEvent('propertiesChanged', {
+                    detail: {
+                        properties: {
+                            validCategoryNames
+                        }
+                    }
+                }));
+            }
+            
 
             // Series Styling
-            // const customColors = this.customColors || [];
-            // const colorMap = new Map(customColors.map(c => [c.category, c.color]));
-            // nodes.forEach(node => {
-            //     if (colorMap.has(node.name)) {
-            //         node.color = colorMap.get(node.name);
-            //     }
-            // });
+            const customColors = this.customColors || [];
+            const colorMap = new Map(customColors.map(c => [c.category, c.color]));
+            nodes.forEach(node => {
+                if (colorMap.has(node.name)) {
+                    node.color = colorMap.get(node.name);
+                }
+            });
 
 
             // Global Configurations
