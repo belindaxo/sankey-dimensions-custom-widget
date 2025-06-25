@@ -1,5 +1,3 @@
-import { link } from "d3";
-
 export function processSankeyData(data, dimensions, measures) {
     if (!dimensions.length || !measures.length) {
         return { nodes: [], links: [] };
@@ -12,8 +10,8 @@ export function processSankeyData(data, dimensions, measures) {
     data.forEach(row => {
         const path = dimensions.map(dim => {
             const cell = row[dim.key] || {};
-            const label = (cell.label ?? cell.id ?? '(Empty)').trim();
-            const id = `${dim.key}-${label}`;
+            const label = (cell.label ?? cell.id ?? '').trim() || '(Empty)';
+            const id = `${dim.key}::${label}`;
             if (!nodeMap.has(id)) {
                 nodeMap.set(id, { id, name: label });
             }
@@ -38,9 +36,6 @@ export function processSankeyData(data, dimensions, measures) {
             } else {
                 linksMap.set(key, { from, to, weight });
             }
-
-            nodesSet.add(from);
-            nodesSet.add(to);
         }
     });
 
