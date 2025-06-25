@@ -11,8 +11,8 @@ export function formatTooltipPoint(scaleFormat) {
             const { scaledValue, valueSuffix } = scaleFormat(this.weight);
             const value = Highcharts.numberFormat(scaledValue, -1, '.', ',');
             const valueWithSuffix = `${value} ${valueSuffix}`;
-            const fromNodeName = this.from;
-            const toNodeName = this.to;
+            const fromNodeName = this.fromNode?.name;
+            const toNodeName = this.toNode?.name;
             return `
                         ${fromNodeName} \u2192 ${toNodeName}: ${valueWithSuffix}
                     `;
