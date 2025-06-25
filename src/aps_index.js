@@ -287,9 +287,6 @@ const defaultColors = ['#004b8d', '#939598', '#faa834', '#00aa7e', '#47a5dc', '#
                 }
                 this._submit(new Event('submit')); // Trigger submit event to update properties
             });
-
-            this._renderLinksTable = renderLinksTable;
-            this._renderLinksTable();
         }
 
         /**
@@ -441,54 +438,16 @@ const defaultColors = ['#004b8d', '#939598', '#faa834', '#00aa7e', '#47a5dc', '#
             this._shadowRoot.getElementById('linkColorMode').value = value;
         }
 
-        get centerNode() {
-            return this._shadowRoot.getElementById('centerNode').value;
-        }
+        // get customColors() {
+        //     return this._customColors || [];
+        // }
 
-        set centerNode(value) {
-            this._centerNodeValue = value;
-            this._shadowRoot.getElementById('centerNode').value = value;
-        }
-
-        get manualLinks() {
-            return this._manualLinks || [];
-        }
-
-        set manualLinks(value) {
-            this._manualLinks = value || [];
-            if (this._renderLinksTable) {
-                this._renderLinksTable();
-            }
-        }
-
-        get validMeasureNames() {
-            return this._validMeasureNames || [];
-        }
-
-        set validMeasureNames(value) {
-            console.log("validMeasureNames set to:", value);
-            this._validMeasureNames = value || [];
-            if (this._renderLinksTable) {
-                this._renderLinksTable();
-            }
-            if (this._populateCenterNodeDropdown) {
-                this._populateCenterNodeDropdown(this._validMeasureNames);
-            }
-            if (this._renderMeasureColorGrid && this._customColors) {
-                this._renderMeasureColorGrid();
-            }
-        }
-
-        get customColors() {
-            return this._customColors || [];
-        }
-
-        set customColors(value) {
-            this._customColors = value || [];
-            if (this._renderMeasureColorGrid && this._validMeasureNames) {
-                this._renderMeasureColorGrid();
-            }
-        }
+        // set customColors(value) {
+        //     this._customColors = value || [];
+        //     if (this._renderMeasureColorGrid && this._validMeasureNames) {
+        //         this._renderMeasureColorGrid();
+        //     }
+        // }
 
     }
     customElements.define('com-sap-sample-sankey-dimensions-aps', SankeyDimensionsAps);
