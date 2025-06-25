@@ -1,21 +1,31 @@
+import { link } from "d3";
+
 export function processSankeyData(data, dimensions, measures) {
-    const linksMap = new Map();
-    const nodesSet = new Set();
-    const weightKey = measures[0]?.key; 
+    if (!dimensions.length || !measures.length) {
+        return { nodes: [], links: [] };
+    }
+
+    const weightKey = measures[0].key;
+    const linksMap = new Map(); // "from->to" -> { from, to, weight }
+    const nodesSet = new Set(); // unique node names
 
     data.forEach(row => {
-        const path = dimensions.map(dim => row[dim.key]?.id || "Unknown");
+        const path = dimensions.map(dim => {
+            const cell = row[dim.key] || {};
+            return (cell.label ?? cell.id ?? '(Empty)').trim();
+        });
+
+        const weight = row[weightKey]?.raw ?? 0;
+        if (!Number.isFinite(weight) || !weight) {
+            return; // Skip invalid weights
+        }
 
         for (let i = 0; i < path.length - 1; i++) {
             const from = path[i];
             const to = path[i + 1];
-            const weight = row[weightKey]?.raw ?? 0;
+            if (!from || !to) continue;
 
-            if (!from || !to || isNaN(weight)) {
-                continue; // Skip invalid paths
-            }
-
-            const key = `${from}-${to}`;
+            const key = `${from}->${to}`;
             const existing = linksMap.get(key);
 
             if (existing) {
@@ -24,10 +34,13 @@ export function processSankeyData(data, dimensions, measures) {
                 linksMap.set(key, { from, to, weight });
             }
 
-            const nodes = Array.from(nodesSet).map(name => ({id: name, name }));
-            const links = Array.from(linksMap.values());
-
-            return { nodes, links };
+            nodesSet.add(from);
+            nodesSet.add(to);
         }
-    })
+    });
+
+    const nodes = Array.from(nodesSet).map(name => ({ id: name, name }));
+    const links = Array.from(linksMap.values());
+
+    return { nodes, links };
 }

@@ -162,24 +162,6 @@ const defaultColors = ['#004b8d', '#939598', '#faa834', '#00aa7e', '#47a5dc', '#
         <tr>
             <button id="resetDefaults" type="button" style="margin-top: 10px; margin-bottom: 10px;">Reset to Default</button>
         </tr>
-        <legend style="font-weight: bold; font-size: 18px; margin-bottom: 8px;">Link Definitions</legend>
-        <tr>
-            <td>Center Node:</td>
-        </tr>
-        <tr>
-            <td>
-                <select id="centerNode">
-                    <option value=""> Select Center Node </option>
-                </select>
-            </td>
-        </tr>
-        <div id="linksContainer" style="margin-bottom: 10px; margin-top: 8px;"></div>
-        <button type="button" id="addLinkButton" style="margin-bottom: 10px;">+ Add Link</button>
-        <legend style="font-weight: bold; font-size: 18px;">Node Colors</legend>
-        <div id="measureColorGrid" style="margin-top: 8px;"></div>
-        <tr>
-            <td><button type="button" id="resetColors">Reset Colors</button></td>
-        </tr>
         <input type="submit" style="display:none;">
         </form>
     `;
@@ -215,151 +197,63 @@ const defaultColors = ['#004b8d', '#939598', '#faa834', '#00aa7e', '#47a5dc', '#
             this._shadowRoot = this.attachShadow({ mode: 'open' });
             this._shadowRoot.appendChild(template.content.cloneNode(true));
 
-            this.customColors = [];
+            // this.customColors = [];
 
-            const colorGridContainer = this._shadowRoot.getElementById('measureColorGrid');
+            // const colorGridContainer = this._shadowRoot.getElementById('measureColorGrid');
 
-            const renderMeasureColorGrid = () => {
-                colorGridContainer.innerHTML = '';
-                this.validMeasureNames.forEach(measureName => {
-                    const wrapper = document.createElement('div');
-                    wrapper.style.display = 'flex';
-                    wrapper.style.alignItems = 'center';
-                    wrapper.style.marginBottom = '6px';
+            // const renderMeasureColorGrid = () => {
+            //     colorGridContainer.innerHTML = '';
+            //     this.validMeasureNames.forEach(measureName => {
+            //         const wrapper = document.createElement('div');
+            //         wrapper.style.display = 'flex';
+            //         wrapper.style.alignItems = 'center';
+            //         wrapper.style.marginBottom = '6px';
 
-                    const label = document.createElement('span');
-                    label.textContent = measureName;
-                    label.style.width = '140px';
+            //         const label = document.createElement('span');
+            //         label.textContent = measureName;
+            //         label.style.width = '140px';
 
-                    const input = document.createElement('input');
-                    input.type = 'color';
-                    input.style.marginLeft = '8px';
+            //         const input = document.createElement('input');
+            //         input.type = 'color';
+            //         input.style.marginLeft = '8px';
 
-                    const currentColor = this.customColors.find(c => c.category === measureName)?.color;
-                    const defaultIndex = this.validMeasureNames.indexOf(measureName) % defaultColors.length;
-                    input.value = currentColor || defaultColors[defaultIndex];
+            //         const currentColor = this.customColors.find(c => c.category === measureName)?.color;
+            //         const defaultIndex = this.validMeasureNames.indexOf(measureName) % defaultColors.length;
+            //         input.value = currentColor || defaultColors[defaultIndex];
 
-                    input.addEventListener('change', () => {
-                        const existing = this.customColors.find(c => c.category === measureName);
-                        const updatedColor = input.value;
+            //         input.addEventListener('change', () => {
+            //             const existing = this.customColors.find(c => c.category === measureName);
+            //             const updatedColor = input.value;
 
-                        if (existing) {
-                            if (updatedColor === defaultColors[defaultIndex]) {
-                                this.customColors = this.customColors.filter(c => c.category !== measureName);
-                            } else {
-                                existing.color = updatedColor;
-                                this.customColors = [...this.customColors]; // Trigger reactivity
-                            }
-                        } else if (updatedColor !== defaultColors[defaultIndex]) {
-                            this.customColors = [...this.customColors, { category: measureName, color: updatedColor }];
-                        }
+            //             if (existing) {
+            //                 if (updatedColor === defaultColors[defaultIndex]) {
+            //                     this.customColors = this.customColors.filter(c => c.category !== measureName);
+            //                 } else {
+            //                     existing.color = updatedColor;
+            //                     this.customColors = [...this.customColors]; // Trigger reactivity
+            //                 }
+            //             } else if (updatedColor !== defaultColors[defaultIndex]) {
+            //                 this.customColors = [...this.customColors, { category: measureName, color: updatedColor }];
+            //             }
 
-                        this._submit(new Event('submit'));
-                    });
+            //             this._submit(new Event('submit'));
+            //         });
 
-                    wrapper.appendChild(label);
-                    wrapper.appendChild(input);
-                    colorGridContainer.appendChild(wrapper);
-                });
-            };
+            //         wrapper.appendChild(label);
+            //         wrapper.appendChild(input);
+            //         colorGridContainer.appendChild(wrapper);
+            //     });
+            // };
 
-            const resetColorsButton = this._shadowRoot.getElementById('resetColors');
-            resetColorsButton.addEventListener('click', () => {
-                this.customColors = [];
-                renderMeasureColorGrid();
-                this._submit(new Event('submit'));
-            });
+            // const resetColorsButton = this._shadowRoot.getElementById('resetColors');
+            // resetColorsButton.addEventListener('click', () => {
+            //     this.customColors = [];
+            //     renderMeasureColorGrid();
+            //     this._submit(new Event('submit'));
+            // });
 
-            this._renderMeasureColorGrid = renderMeasureColorGrid;
-            renderMeasureColorGrid();
-
-            this._centerNodeDropdown = this._shadowRoot.getElementById('centerNode');
-            this._populateCenterNodeDropdown = (measures) => {
-                this._centerNodeDropdown.innerHTML = '<option value=""> Select Center Node </option>';
-                measures.forEach(measure => {
-                    const option = document.createElement('option');
-                    option.value = measure;
-                    option.textContent = measure;
-                    this._centerNodeDropdown.appendChild(option);
-                });
-
-                if (this._centerNodeValue && measures.includes(this._centerNodeValue)) {
-                    this._centerNodeDropdown.value = this._centerNodeValue;
-                }
-            };
-
-            this.manualLinks = [];
-
-            const linksContainer = this._shadowRoot.getElementById('linksContainer');
-            const addLinkButton = this._shadowRoot.getElementById('addLinkButton');
-
-            const renderLinksTable = () => {
-                linksContainer.innerHTML = '';
-                this.manualLinks.forEach((link, index) => {
-                    const row = document.createElement('div');
-                    row.style.display = 'flex';
-                    row.style.marginBottom = '6px';
-
-                    const fromSelect = document.createElement('select');
-                    fromSelect.style.marginRight = '6px';
-
-                    this.validMeasureNames?.forEach(measure => {
-                        const option = document.createElement('option');
-                        option.value = measure;
-                        option.textContent = measure;
-                        if (measure === link.from) {
-                            option.selected = true;
-                        }
-                        fromSelect.appendChild(option);
-                    })
-
-                    fromSelect.addEventListener('change', () => {
-                        this.manualLinks[index].from = fromSelect.value;
-                        this.manualLinks = [...this.manualLinks]; // Trigger reactivity
-                        this._submit(new Event('submit'));
-                    });
-
-                    const toSelect = document.createElement('select');
-                    toSelect.style.marginRight = '6px';
-
-                    this.validMeasureNames?.forEach(measure => {
-                        const option = document.createElement('option');
-                        option.value = measure;
-                        option.textContent = measure;
-                        if (measure === link.to) {
-                            option.selected = true;
-                        }
-                        toSelect.appendChild(option);
-                    });
-
-                    toSelect.addEventListener('change', () => {
-                        this.manualLinks[index].to = toSelect.value;
-                        this.manualLinks = [...this.manualLinks]; // Trigger reactivity
-                        this._submit(new Event('submit'));
-                    });
-
-                    const removeButton = document.createElement('button');
-                    removeButton.textContent = 'Remove';
-                    removeButton.type = 'button';
-                    removeButton.addEventListener('click', () => {
-                        this.manualLinks.splice(index, 1);
-                        this.manualLinks = [...this.manualLinks]; // Trigger reactivity
-                        renderLinksTable();
-                        this._submit(new Event('submit'));
-                    });
-
-                    row.appendChild(fromSelect);
-                    row.appendChild(toSelect);
-                    row.appendChild(removeButton);
-                    linksContainer.appendChild(row);
-                });
-            };
-
-            addLinkButton.addEventListener('click', () => {
-                this.manualLinks.push({ from: '', to: '' });
-                renderLinksTable();
-                this._submit(new Event('submit'));
-            });
+            // this._renderMeasureColorGrid = renderMeasureColorGrid;
+            // renderMeasureColorGrid();
 
             this._shadowRoot.getElementById('form').addEventListener('submit', this._submit.bind(this));
             this._shadowRoot.getElementById('titleSize').addEventListener('change', this._submit.bind(this));
@@ -374,7 +268,6 @@ const defaultColors = ['#004b8d', '#939598', '#faa834', '#00aa7e', '#47a5dc', '#
             this._shadowRoot.getElementById('decimalPlaces').addEventListener('change', this._submit.bind(this));
             this._shadowRoot.getElementById('isInverted').addEventListener('change', this._submit.bind(this));
             this._shadowRoot.getElementById('linkColorMode').addEventListener('change', this._submit.bind(this));
-            this._shadowRoot.getElementById('centerNode').addEventListener('change', this._submit.bind(this));
 
             // Reset button logic
             this._shadowRoot.getElementById('resetDefaults').addEventListener('click', () => {

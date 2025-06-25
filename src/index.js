@@ -24,8 +24,6 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
             this.shadowRoot.innerHTML = `
                 <div id="container"></div>    
             `;
-
-            this._lastSentMeasures = [];
         }
 
         /**
@@ -64,8 +62,8 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
                 'chartTitle', 'titleSize', 'titleFontStyle', 'titleAlignment', 'titleColor',                // Title properties
                 'chartSubtitle', 'subtitleSize', 'subtitleFontStyle', 'subtitleAlignment', 'subtitleColor', // Subtitle properties
                 'scaleFormat', 'decimalPlaces',                                                             // Number formatting properties
-                'isInverted', "linkColorMode", "manualLinks", "centerNode",                                 // Sankey chart properties
-                'customColors'                                                                              // Custom colors
+                'isInverted', "linkColorMode"                                                               // Sankey chart properties
+                //'customColors'                                                                              // Custom colors
             ];
         }
 
@@ -122,32 +120,19 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
             console.log('Processed nodes:', nodes);
             console.log('Processed links:', links);
 
-            const validMeasureNames = measures.map(m => m.label) || [];
-            if (JSON.stringify(this._lastSentMeasures) !== JSON.stringify(validMeasureNames)) {
-                this._lastSentMeasures = validMeasureNames;
-                this.dispatchEvent(new CustomEvent('propertiesChanged', {
-                    detail: {
-                        properties: {
-                            validMeasureNames
-                        }
-                    }
-                }));
-            }
-
-
             // Formatters and Chart Options
             const scaleFormat = (value) => scaleValue(value, this.scaleFormat, this.decimalPlaces);
             const subtitleText = updateSubtitle(this.chartSubtitle, this.scaleFormat);
 
 
             // Series Styling
-            const customColors = this.customColors || [];
-            const colorMap = new Map(customColors.map(c => [c.category, c.color]));
-            nodes.forEach(node => {
-                if (colorMap.has(node.name)) {
-                    node.color = colorMap.get(node.name);
-                }
-            });
+            // const customColors = this.customColors || [];
+            // const colorMap = new Map(customColors.map(c => [c.category, c.color]));
+            // nodes.forEach(node => {
+            //     if (colorMap.has(node.name)) {
+            //         node.color = colorMap.get(node.name);
+            //     }
+            // });
 
 
             // Global Configurations
