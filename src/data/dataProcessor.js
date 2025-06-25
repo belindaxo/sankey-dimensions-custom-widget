@@ -6,13 +6,18 @@ export function processSankeyData(data, dimensions, measures) {
     }
 
     const weightKey = measures[0].key;
-    const linksMap = new Map(); // "from->to" -> { from, to, weight }
-    const nodesSet = new Set(); // unique node names
+    const linksMap = new Map();
+    const nodeMap = new Map(); // "id" -> { id, name }
 
     data.forEach(row => {
         const path = dimensions.map(dim => {
             const cell = row[dim.key] || {};
-            return (cell.label ?? cell.id ?? '(Empty)').trim();
+            const label = (cell.label ?? cell.id ?? '(Empty)').trim();
+            const id = `${dim.key}-${label}`;
+            if (!nodeMap.has(id)) {
+                nodeMap.set(id, { id, name: label });
+            }
+            return id;
         });
 
         const weight = row[weightKey]?.raw ?? 0;
@@ -39,7 +44,7 @@ export function processSankeyData(data, dimensions, measures) {
         }
     });
 
-    const nodes = Array.from(nodesSet).map(name => ({ id: name, name }));
+    const nodes = Array.from(nodeMap.values());
     const links = Array.from(linksMap.values());
 
     return { nodes, links };
