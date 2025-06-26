@@ -45,14 +45,10 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
     }
     console.log('Row:', row);
 
-    const selection = {};
-
-    for (let i = 0; i <= fromDimIndex; i++) {
-        const dim = dimensions[i];
-        selection[dim.id] = row[dim.key].id;
-    }
-
-    selection[toDim.id] = row[toKey].id;
+    const selection = {
+        [fromDim.id]: row[fromKey].id,
+        [toDim.id]: row[toKey].id
+    };
 
 
     const linkedAnalysis = widget.dataBindings.getDataBinding('dataBinding').getLinkedAnalysis();
