@@ -7,6 +7,7 @@ import { createChartStylesheet } from './config/styles';
 import { updateSubtitle } from './config/chartUtils';
 import { scaleValue } from './formatting/scaleFormatter';
 import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipFormatters';
+import { handlePointClick } from './interactions/eventHandlers';
 
 (function () {
     class SankeyDimensions extends HTMLElement {
@@ -26,6 +27,7 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
             `;
 
             this._lastSentCategories = [];
+            this._selectedPoint = null;
         }
 
         /**
@@ -53,6 +55,7 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
                 this._chart.destroy();
                 this._chart = null;
             }
+            this._selectedPoint = null;
         }
 
         /**
@@ -64,8 +67,8 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
                 'chartTitle', 'titleSize', 'titleFontStyle', 'titleAlignment', 'titleColor',                // Title properties
                 'chartSubtitle', 'subtitleSize', 'subtitleFontStyle', 'subtitleAlignment', 'subtitleColor', // Subtitle properties
                 'scaleFormat', 'decimalPlaces',                                                             // Number formatting properties
-                'isInverted', "linkColorMode"                                                               // Sankey chart properties
-                //'customColors'                                                                              // Custom colors
+                'isInverted', "linkColorMode",                                                              // Sankey chart properties
+                'customColors'                                                                              // Custom colors
             ];
         }
 
@@ -92,6 +95,7 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
                 if (this._chart) {
                     this._chart.destroy();
                     this._chart = null;
+                    this._selectedPoint = null;
                 }
                 return;
             }
@@ -106,6 +110,7 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
                 if (this._chart) {
                     this._chart.destroy();
                     this._chart = null;
+                    this._selectedPoint = null;
                 }
                 return;
             }
@@ -137,6 +142,8 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
                     }
                 }));
             }
+
+            const onPointClick = (event) => handlePointClick(event, dataBinding, dimensions, this);
             
 
             // Series Styling
@@ -194,6 +201,14 @@ import { formatTooltipPoint, formatTooltipNode } from './formatting/tooltipForma
                             enabled: true,
                             style: {
                                 fontWeight: 'normal'
+                            }
+                        },
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        point: {
+                            events: {
+                                select: onPointClick,
+                                unselect: onPointClick
                             }
                         }
                     }

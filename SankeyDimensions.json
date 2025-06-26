@@ -7,6 +7,7 @@
     "id": "com.sap.sample.sankey.dimensions",
     "newInstancePrefix": "SankeyDimensions",
     "version": "0.0.1",
+    "supportsLinkedAnalysisFilterOnSelection": true,
     "webcomponents": [
         {
             "kind": "main",
