@@ -13,26 +13,33 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
         return;
     }
 
-    const label = point.toNode.name;
+    const [toKey, toLabelRaw] = point.to.split('::');
+    const [fromKey, fromLabelRaw] = point.from.split('::');
 
-    let matchItem = null;
-    let matchDim = null;
+    const fromLabel = fromLabelRaw;
+    const toLabel = toLabelRaw;
+    console.log('toLabel:', toLabel);
+    console.log('fromLabel:', fromLabel);
 
-    for (const dim of dimensions) {
-        const row = dataBinding.data.find(
-            (item) => item[dim.key]?.label === label
-        );
-        if (row) {
-            matchItem = row;
-            matchDim = dim;
-            break;
-        }
+    const toDim = dimensions.find(dim => dim.key === toKey);
+    const fromDim = dimensions.find(dim => dim.key === fromKey);
+
+    console.log('toLabel:', toLabelRaw);
+    console.log('fromLabel:', fromLabelRaw);
+    console.log('toKey:', toKey);
+    console.log('fromKey:', fromKey);
+    console.log('toDim:', toDim);
+    console.log('fromDim:', fromDim);
+
+    if (!fromDim || !toDim) {
+        console.log('Dimensions not found for keys:', toKey, fromKey);
+        return;
     }
-    console.log('Matched dimension:', matchDim);
-    console.log('Matched item:', matchItem);
 
-    if (!matchItem || !matchDim) {
-        console.log('No matching item or dimension found with label:', label);
+    const fromRow = dataBinding.data.find(row => (row[fromKey]?.label ?? '').trim() === fromLabel);
+    const toRow = dataBinding.data.find(row => (row[toKey]?.label ?? '').trim() === toLabel);
+    if (!fromRow || !toRow) {
+        console.log('Rows not found for labels:', fromLabel, toLabel);
         return;
     }
 
@@ -46,11 +53,15 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
     }
 
     if (event.type === 'select') {
-        const selection = {};
-        selection[matchDim.id] = matchItem[matchDim.key].id;
+        const selection = [
+            {
+                [fromDim.id]: fromRow[fromKey].id
+            },
+            {
+                [toDim.id]: toRow[toKey].id
+            }
+        ]
         console.log('Selection:', selection);
-        console.log('selection[matchDim.id]:', selection[matchDim.id]);
-        console.log('matchItem[matchDim.key].id', matchItem[matchDim.key].id);
         linkedAnalysis.setFilters(selection);
         widget._selectedPoint = point;
     } else if (event.type === 'unselect') {
