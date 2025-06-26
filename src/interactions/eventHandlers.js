@@ -21,27 +21,38 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
     console.log('toLabel:', toLabel);
     console.log('fromLabel:', fromLabel);
 
-    const toDim = dimensions.find(dim => dim.key === toKey);
-    const fromDim = dimensions.find(dim => dim.key === fromKey);
+    const fromDimIndex = dimensions.findIndex(d => d.key === fromKey);
+    const toDimIndex = dimensions.findIndex(d => d.key === toKey);
+    if (fromDimIndex === -1 || toDimIndex === -1) {
+        console.log('Could not resolve dimension metadata for link');
+        return;
+    }
+    console.log('fromDimIndex:', fromDimIndex);
+    console.log('toDimIndex:', toDimIndex);
 
-    console.log('toLabel:', toLabelRaw);
-    console.log('fromLabel:', fromLabelRaw);
-    console.log('toKey:', toKey);
-    console.log('fromKey:', fromKey);
-    console.log('toDim:', toDim);
+    const fromDim = dimensions[fromDimIndex];
+    const toDim = dimensions[toDimIndex];
     console.log('fromDim:', fromDim);
+    console.log('toDim:', toDim);
 
-    if (!fromDim || !toDim) {
-        console.log('Dimensions not found for keys:', toKey, fromKey);
+    const row = dataBinding.data.find(r => 
+    (r[fromKey]?.label).trim() === fromLabel &&
+    (r[toKey]?.label).trim() === toLabel
+    );
+    if (!row) {
+        console.log('Row not found for the selected point');
         return;
     }
+    console.log('Row:', row);
 
-    const fromRow = dataBinding.data.find(row => (row[fromKey]?.label ?? '').trim() === fromLabel);
-    const toRow = dataBinding.data.find(row => (row[toKey]?.label ?? '').trim() === toLabel);
-    if (!fromRow || !toRow) {
-        console.log('Rows not found for labels:', fromLabel, toLabel);
-        return;
+    const selection = {};
+
+    for (let i = 0; i <= fromDimIndex; i++) {
+        const dim = dimensions[i];
+        selection[dim.id] = row[dim.key].id;
     }
+
+    selection[toDim.id] = row[toKey].id;
 
 
     const linkedAnalysis = widget.dataBindings.getDataBinding('dataBinding').getLinkedAnalysis();
@@ -53,12 +64,6 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
     }
 
     if (event.type === 'select') {
-        const selection = {
-            [fromDim.id]: fromRow[fromKey].id,
-            [toDim.id]: toRow[toKey].id
-        }
-
-        console.log('Selection:', selection);
         linkedAnalysis.setFilters(selection);
         widget._selectedPoint = point;
     } else if (event.type === 'unselect') {
