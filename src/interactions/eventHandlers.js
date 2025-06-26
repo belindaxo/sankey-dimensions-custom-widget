@@ -53,14 +53,11 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
     }
 
     if (event.type === 'select') {
-        const selection = [
-            {
-                [fromDim.id]: fromRow[fromKey].id
-            },
-            {
-                [toDim.id]: toRow[toKey].id
-            }
-        ]
+        const selection = {
+            [fromDim.id]: fromRow[fromKey].id,
+            [toDim.id]: toRow[toKey].id
+        }
+
         console.log('Selection:', selection);
         linkedAnalysis.setFilters(selection);
         widget._selectedPoint = point;
