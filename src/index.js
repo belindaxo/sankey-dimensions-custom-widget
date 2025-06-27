@@ -3,7 +3,7 @@ import 'highcharts/modules/sankey';
 import 'highcharts/modules/exporting';
 import { parseMetadata } from './data/metadataParser';
 import { processSankeyData } from './data/dataProcessor';
-import { applyHighchartsDefaults, overrideContextButtonSymbol, renderContextButton } from './config/highchartsSetup';
+import { applyHighchartsDefaults } from './config/highchartsSetup';
 import { createChartStylesheet } from './config/styles';
 import { updateSubtitle } from './config/chartUtils';
 import { scaleValue } from './formatting/scaleFormatter';
@@ -159,7 +159,6 @@ import { handlePointClick } from './interactions/eventHandlers';
 
             // Global Configurations
             applyHighchartsDefaults();
-            overrideContextButtonSymbol();
 
 
             // Chart Options Construction
@@ -169,12 +168,7 @@ import { handlePointClick } from './interactions/eventHandlers';
                     style: {
                         fontFamily: "'72', sans-serif"
                     },
-                    inverted: this.isInverted || false,
-                    events: {
-                        render: function () {
-                            renderContextButton(this);
-                        }
-                    }
+                    inverted: this.isInverted || false
                 },
                 title: {
                     text: this.chartTitle || "",
@@ -221,28 +215,7 @@ import { handlePointClick } from './interactions/eventHandlers';
                     }
                 },
                 exporting: {
-                    enabled: true,
-                    buttons: {
-                        contextButton: {
-                            enabled: false,
-                        }
-                    },
-                    menuItemDefinitions: {
-                        resetFilters: {
-                            text: 'Reset Filters',
-                            onclick: () => {
-                                const linkedAnalysis = this.dataBindings.getDataBinding('dataBinding').getLinkedAnalysis();
-                                if (linkedAnalysis) {
-                                    linkedAnalysis.removeFilters();
-                                    if (this._selectedPoint) {
-                                        this._selectedPoint.select(false, false);
-                                        this._selectedPoint = null;
-                                    }
-                                }
-                            }
-
-                        }
-                    }
+                    enabled: false
                 },
                 series: [{
                     keys: ['from', 'to', 'weight'],
@@ -253,38 +226,6 @@ import { handlePointClick } from './interactions/eventHandlers';
                 }]
             };
             this._chart = Highcharts.chart(this.shadowRoot.getElementById('container'), chartOptions);
-            const container = this.shadowRoot.getElementById('container');
-
-            // Container Event Listeners
-            container.addEventListener("mouseenter", () => {
-                if (this._chart) {
-                    this._chart.update({
-                        exporting: {
-                            buttons: {
-                                contextButton: {
-                                    enabled: true,
-                                    symbol: 'contextButton',
-                                    menuItems: ['resetFilters']
-                                },
-                            },
-                        },
-                    }, true);
-                    renderContextButton(this._chart);
-                }
-            });
-            container.addEventListener("mouseleave", () => {
-                if (this._chart) {
-                    this._chart.update({
-                        exporting: {
-                            buttons: {
-                                contextButton: {
-                                    enabled: false,
-                                },
-                            },
-                        },
-                    }, true);
-                }
-            });
         }
 
 
