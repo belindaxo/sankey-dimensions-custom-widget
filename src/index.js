@@ -269,6 +269,7 @@ import { handlePointClick } from './interactions/eventHandlers';
                             },
                         },
                     }, true);
+                    renderContextButton(this._chart);
                 }
             });
             container.addEventListener("mouseleave", () => {
