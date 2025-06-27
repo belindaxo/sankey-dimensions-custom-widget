@@ -13,43 +13,69 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
         return;
     }
 
-    const [toKey, toLabelRaw] = point.to.split('::');
-    const [fromKey, fromLabelRaw] = point.from.split('::');
+    let selection = {};
 
-    const fromLabel = fromLabelRaw;
-    const toLabel = toLabelRaw;
-    console.log('toLabel:', toLabel);
-    console.log('fromLabel:', fromLabel);
+    if (point.options.isNode) {
+        const [pointKey, pointLabel] = point.id.split('::');
+        console.log('Point is a node:', pointKey, pointLabel);
 
-    const fromDimIndex = dimensions.findIndex(d => d.key === fromKey);
-    const toDimIndex = dimensions.findIndex(d => d.key === toKey);
-    if (fromDimIndex === -1 || toDimIndex === -1) {
-        console.log('Could not resolve dimension metadata for link');
-        return;
+        const dimIndex = dimensions.findIndex(d => d.key === pointKey);
+        if (dimIndex === -1) {
+            console.log('Could not resolve dimension metadata for node');
+            return;
+        }
+        const dim = dimensions[dimIndex];
+        console.log('Dimension:', dim);
+
+        const row = dataBinding.data.find(r => r[pointKey]?.label.trim() === pointLabel);
+        if (!row) {
+            console.log('Row not found for the selected point');
+            return;
+        }
+        console.log('Row:', row);
+
+        selection = {
+            [dim.id]: row[pointKey].id
+        }
+    } else {
+        const [toKey, toLabelRaw] = point.to.split('::');
+        const [fromKey, fromLabelRaw] = point.from.split('::');
+
+        const fromLabel = fromLabelRaw;
+        const toLabel = toLabelRaw;
+        console.log('toLabel:', toLabel);
+        console.log('fromLabel:', fromLabel);
+
+        const fromDimIndex = dimensions.findIndex(d => d.key === fromKey);
+        const toDimIndex = dimensions.findIndex(d => d.key === toKey);
+        if (fromDimIndex === -1 || toDimIndex === -1) {
+            console.log('Could not resolve dimension metadata for link');
+            return;
+        }
+        console.log('fromDimIndex:', fromDimIndex);
+        console.log('toDimIndex:', toDimIndex);
+
+        const fromDim = dimensions[fromDimIndex];
+        const toDim = dimensions[toDimIndex];
+        console.log('fromDim:', fromDim);
+        console.log('toDim:', toDim);
+
+        const row = dataBinding.data.find(r =>
+            (r[fromKey]?.label).trim() === fromLabel &&
+            (r[toKey]?.label).trim() === toLabel
+        );
+
+        if (!row) {
+            console.log('Row not found for the selected point');
+            return;
+        }
+        console.log('Row:', row);
+
+        selection = {
+            [fromDim.id]: row[fromKey].id,
+            [toDim.id]: row[toKey].id
+        };
     }
-    console.log('fromDimIndex:', fromDimIndex);
-    console.log('toDimIndex:', toDimIndex);
-
-    const fromDim = dimensions[fromDimIndex];
-    const toDim = dimensions[toDimIndex];
-    console.log('fromDim:', fromDim);
-    console.log('toDim:', toDim);
-
-    const row = dataBinding.data.find(r => 
-    (r[fromKey]?.label).trim() === fromLabel &&
-    (r[toKey]?.label).trim() === toLabel
-    );
-    if (!row) {
-        console.log('Row not found for the selected point');
-        return;
-    }
-    console.log('Row:', row);
-
-    const selection = {
-        [fromDim.id]: row[fromKey].id,
-        [toDim.id]: row[toKey].id
-    };
-
 
     const linkedAnalysis = widget.dataBindings.getDataBinding('dataBinding').getLinkedAnalysis();
 
