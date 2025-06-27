@@ -6,7 +6,6 @@ import * as Highcharts from 'highcharts';
  */
 export function formatTooltipPoint(scaleFormat) {
     return function () {
-        //console.log(this);
         if (this) {
             const { scaledValue, valueSuffix } = scaleFormat(this.weight);
             const value = Highcharts.numberFormat(scaledValue, -1, '.', ',');
@@ -29,7 +28,6 @@ export function formatTooltipPoint(scaleFormat) {
  */
 export function formatTooltipNode(scaleFormat) {
     return function () {
-        console.log(this);
         if (this) {
             const { scaledValue, valueSuffix } = scaleFormat(this.sum);
             const value = Highcharts.numberFormat(scaledValue, -1, '.', ',');

@@ -52,8 +52,6 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
             console.log('Could not resolve dimension metadata for link');
             return;
         }
-        console.log('fromDimIndex:', fromDimIndex);
-        console.log('toDimIndex:', toDimIndex);
 
         const fromDim = dimensions[fromDimIndex];
         const toDim = dimensions[toDimIndex];
