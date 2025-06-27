@@ -3,7 +3,7 @@ import 'highcharts/modules/sankey';
 import 'highcharts/modules/exporting';
 import { parseMetadata } from './data/metadataParser';
 import { processSankeyData } from './data/dataProcessor';
-import { applyHighchartsDefaults, overrideContextButtonSymbol } from './config/highchartsSetup';
+import { applyHighchartsDefaults, overrideContextButtonSymbol, renderContextButton } from './config/highchartsSetup';
 import { createChartStylesheet } from './config/styles';
 import { updateSubtitle } from './config/chartUtils';
 import { scaleValue } from './formatting/scaleFormatter';
@@ -169,7 +169,12 @@ import { handlePointClick } from './interactions/eventHandlers';
                     style: {
                         fontFamily: "'72', sans-serif"
                     },
-                    inverted: this.isInverted || false
+                    inverted: this.isInverted || false,
+                    events: {
+                        render: function () {
+                            renderContextButton(this);
+                        }
+                    }
                 },
                 title: {
                     text: this.chartTitle || "",

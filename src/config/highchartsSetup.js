@@ -59,3 +59,13 @@ export function overrideContextButtonSymbol() {
         );
     };
 }
+
+/**
+ * Renders the context button to the front of the chart.
+ * @param {Highcharts.Chart} chart - Reference to the Highcharts chart instance.
+ */
+export function renderContextButton(chart) {
+    if (chart.exportSVGElements && chart.exportSVGElements[0]) {
+        chart.exportSVGElements[0].toFront();
+    }
+}
