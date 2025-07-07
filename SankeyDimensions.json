@@ -13,15 +13,15 @@
             "kind": "main",
             "tag": "com-sap-sample-sankey-dimensions",
             "url": "https://belindaxo.github.io/sankey-dimensions-custom-widget/dist/bundle.js",
-            "integrity": "",
-            "ignoreIntegrity": true
+            "integrity": "sha256-wr+Ysh0NppP9zynIyV8GLQhKeJj3uSgZrrWOJcdCFYQ=",
+            "ignoreIntegrity": false
         },
         {
             "kind": "styling",
             "tag": "com-sap-sample-sankey-dimensions-aps",
             "url": "https://belindaxo.github.io/sankey-dimensions-custom-widget/dist/bundle.js",
-            "integrity": "",
-            "ignoreIntegrity": true
+            "integrity": "sha256-wr+Ysh0NppP9zynIyV8GLQhKeJj3uSgZrrWOJcdCFYQ=",
+            "ignoreIntegrity": false
         }
     ],
     "properties": {
