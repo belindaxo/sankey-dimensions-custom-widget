@@ -81,13 +81,24 @@ export function handlePointClick(event, dataBinding, dimensions, widget) {
         linkedAnalysis.removeFilters();
         widget._selectedPoint.select(false, false);
         widget._selectedPoint = null;
+        const chart = point.series.chart;
+        chart.series.forEach(s => {
+            (s.points || []).forEach(p => p.setState());
+            (s.nodes || []).forEach(n => n.setState());
+        });
     }
 
     if (event.type === 'select') {
         linkedAnalysis.setFilters(selection);
         widget._selectedPoint = point;
+        point.onMouseOver();
     } else if (event.type === 'unselect') {
         linkedAnalysis.removeFilters();
         widget._selectedPoint = null;
+        const chart = point.series.chart;
+        chart.series.forEach(s => {
+            (s.points || []).forEach(p => p.setState());
+            (s.nodes || []).forEach(n => n.setState());
+        });
     }
 }
